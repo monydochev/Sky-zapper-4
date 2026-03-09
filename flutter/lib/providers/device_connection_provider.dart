@@ -77,8 +77,7 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
   void _cleanup() {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = null;
-    _udpSocket?.close();
-    _udpSocket = null;
+    _closeUdpSocket();
     _lastResponse = null;
   }
 
@@ -99,10 +98,11 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
     _udpSocket!.broadcastEnabled = true;
     debugPrint('[UDP] Server started on port ${_udpSocket!.port}');
 
-    _udpSocket!.listen(
+    final socket = _udpSocket!;
+    socket.listen(
       (event) {
         if (event == RawSocketEvent.read) {
-          final datagram = _udpSocket?.receive();
+          final datagram = socket.receive();
           if (datagram != null) {
             _onUdpData(datagram);
           }
@@ -113,18 +113,21 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
       },
       onDone: () {
         debugPrint('[UDP] Socket closed');
-        _udpSocket = null;
+        // Only null out if this is still the active socket (avoid race condition)
+        if (_udpSocket == socket) {
+          _udpSocket = null;
+        }
       },
     );
 
     return _udpSocket!;
   }
 
-  /// Close and recreate the UDP socket (for fresh scan)
-  Future<RawDatagramSocket> _freshUdpSocket() async {
-    _udpSocket?.close();
+  /// Close the UDP socket if open.
+  void _closeUdpSocket() {
+    final old = _udpSocket;
     _udpSocket = null;
-    return _ensureUdpSocket();
+    old?.close();
   }
 
   // ---------------------------------------------------------------------------
@@ -193,8 +196,11 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
     _scanResults = [];
     _scanning = true;
 
+    // Yield to let the UI update (show spinner, finish ripple animation)
+    await Future.delayed(Duration.zero);
+
     try {
-      final socket = await _freshUdpSocket();
+      final socket = await _ensureUdpSocket();
 
       debugPrint('[Broadcast] Sending ReadAll to 255.255.255.255:${AppConstants.udpPort}');
       socket.send(
@@ -231,6 +237,9 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
     _scanResults = [];
     _scanning = true;
 
+    // Yield to let the UI update (show spinner, finish ripple animation)
+    await Future.delayed(Duration.zero);
+
     try {
       final localIp = await _getLocalIp();
       if (localIp == null) {
@@ -255,7 +264,7 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
       final subnet = '${parts[0]}.${parts[1]}.${parts[2]}';
       debugPrint('[Subnet] Local IP: $localIp, scanning $subnet.2-254');
 
-      final socket = await _freshUdpSocket();
+      final socket = await _ensureUdpSocket();
 
       for (int i = 2; i <= 254; i++) {
         // Stop early if device found (like Delphi: if Connection_Type <> -1 then Break)
