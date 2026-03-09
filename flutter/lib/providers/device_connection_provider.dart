@@ -118,6 +118,7 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
           _udpSocket = null;
         }
       },
+      cancelOnError: false, // Keep socket alive even after send errors (iOS)
     );
 
     return _udpSocket!;
@@ -202,12 +203,34 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
     try {
       final socket = await _ensureUdpSocket();
 
-      debugPrint('[Broadcast] Sending ReadAll to 255.255.255.255:${AppConstants.udpPort}');
-      socket.send(
-        _discoveryPacket,
-        InternetAddress('255.255.255.255'),
-        AppConstants.udpPort,
-      );
+      // Send directed broadcast on ALL network interfaces
+      final allIps = await _getAllLocalIps();
+      for (final ip in allIps) {
+        final parts = ip.split('.');
+        if (parts.length == 4) {
+          final directedBroadcast = '${parts[0]}.${parts[1]}.${parts[2]}.255';
+          debugPrint('[Broadcast] Sending ReadAll to $directedBroadcast:${AppConstants.udpPort} (from $ip)');
+          try {
+            socket.send(
+              _discoveryPacket,
+              InternetAddress(directedBroadcast),
+              AppConstants.udpPort,
+            );
+          } catch (e) {
+            debugPrint('[Broadcast] Send to $directedBroadcast failed: $e');
+          }
+        }
+      }
+
+      // Global broadcast — skip on iOS (kills the socket)
+      if (!Platform.isIOS) {
+        debugPrint('[Broadcast] Sending ReadAll to 255.255.255.255:${AppConstants.udpPort}');
+        socket.send(
+          _discoveryPacket,
+          InternetAddress('255.255.255.255'),
+          AppConstants.udpPort,
+        );
+      }
 
       await Future.delayed(const Duration(seconds: 3));
 
@@ -421,7 +444,9 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
   // Helpers
   // ---------------------------------------------------------------------------
 
-  Future<String?> _getLocalIp() async {
+  /// Get all local IPv4 addresses (WiFi, cellular, etc.)
+  Future<List<String>> _getAllLocalIps() async {
+    final ips = <String>[];
     try {
       final interfaces = await NetworkInterface.list(
         type: InternetAddressType.IPv4,
@@ -431,12 +456,23 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
         for (final addr in iface.addresses) {
           if (!addr.address.startsWith('169.254') &&
               !addr.address.startsWith('127.')) {
-            return addr.address;
+            ips.add(addr.address);
+            debugPrint('[Net] Interface ${iface.name}: ${addr.address}');
           }
         }
       }
     } catch (_) {}
-    return null;
+    return ips;
+  }
+
+  Future<String?> _getLocalIp() async {
+    final ips = await _getAllLocalIps();
+    if (ips.isEmpty) return null;
+    // Prefer 192.168.x.x (typical WiFi) over cellular
+    for (final ip in ips) {
+      if (ip.startsWith('192.168.')) return ip;
+    }
+    return ips.first;
   }
 
   void updateDeviceInfo(DeviceInfo info) {
