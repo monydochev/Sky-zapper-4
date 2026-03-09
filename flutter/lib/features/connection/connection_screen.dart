@@ -189,13 +189,23 @@ class ConnectionScreen extends ConsumerWidget {
                     ] else ...[
                       ...connectionState.discoveredDevices.map(
                         (ip) => ListTile(
-                          leading: const Icon(Icons.router),
+                          leading: Icon(
+                            Icons.router,
+                            color: connectionState.connectedIp == ip
+                                ? Colors.green
+                                : null,
+                          ),
                           title: Text(ip),
+                          subtitle: connectionState.connectedIp == ip
+                              ? Text(L10n.tr('connected', locale))
+                              : null,
                           trailing: FilledButton(
-                            onPressed: connectionState.isConnected
+                            onPressed: connectionState.connectedIp == ip
                                 ? null
-                                : () => connectionNotifier.connectLan(ip),
-                            child: Text(L10n.tr('connect', locale)),
+                                : () => connectionNotifier.selectDevice(ip),
+                            child: Text(connectionState.connectedIp == ip
+                                ? L10n.tr('connected', locale)
+                                : L10n.tr('select', locale)),
                           ),
                         ),
                       ),

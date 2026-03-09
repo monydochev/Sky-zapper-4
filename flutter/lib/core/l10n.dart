@@ -154,6 +154,7 @@ class L10n {
     'change_user': {'bg': 'Смяна на потребител', 'en': 'Change User'},
     'about': {'bg': 'За програмата', 'en': 'About'},
     'scan_subnet': {'bg': 'Сканирай подмрежа', 'en': 'Scan Subnet'},
+    'select': {'bg': 'Избери', 'en': 'Select'},
   };
 
   static String tr(String key, String locale) {

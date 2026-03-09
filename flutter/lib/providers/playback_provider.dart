@@ -1,13 +1,13 @@
 import 'dart:async';
-import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/playback_entry.dart';
 import '../data/repositories/disease_repository.dart';
 import '../data/repositories/frequency_repository.dart';
 import '../data/repositories/category_repository.dart';
-import '../device/protocol/commands.dart';
+import '../device/protocol/packet_builder.dart';
 import 'device_connection_provider.dart';
 
 enum PlaybackStatus { idle, playing, paused, stopped }
@@ -263,15 +263,11 @@ class PlaybackNotifier extends Notifier<PlaybackState> {
     _timer?.cancel();
     state = state.copyWith(status: PlaybackStatus.paused);
 
-    // Send stop frequency to device
-    _connectionNotifier.sendCommand(Uint8List.fromList([
-      0,
-      0,
-      Commands.cmdAdvanced,
-      Commands.subSetPowerFreq,
-      0, 0, 0, 0, // freq = 0
-      0, // power = 0
-    ]));
+    // Send STOP to device (ManPower=1) — like Delphi set_power_freq(0,0,1,0,0)
+    _connectionNotifier.sendCommand(
+      PacketBuilder.buildSetPowerFreq(0, 0, 1, 0, 0, isLan: true),
+    );
+    debugPrint('[Playback] Paused — sent ManPower=1 STOP');
   }
 
   void resume() {
@@ -284,15 +280,11 @@ class PlaybackNotifier extends Notifier<PlaybackState> {
   void stop() {
     _timer?.cancel();
 
-    // Send stop frequency to device
-    _connectionNotifier.sendCommand(Uint8List.fromList([
-      0,
-      0,
-      Commands.cmdAdvanced,
-      Commands.subSetPowerFreq,
-      0, 0, 0, 0, // freq = 0
-      0, // power = 0
-    ]));
+    // Send STOP to device (ManPower=1) — like Delphi set_power_freq(0,0,1,0,0)
+    _connectionNotifier.sendCommand(
+      PacketBuilder.buildSetPowerFreq(0, 0, 1, 0, 0, isLan: true),
+    );
+    debugPrint('[Playback] Stopped — sent ManPower=1 STOP');
 
     state = const PlaybackState(status: PlaybackStatus.stopped);
   }
@@ -344,34 +336,24 @@ class PlaybackNotifier extends Notifier<PlaybackState> {
     if (entry == null) return;
 
     if (entry.pauseSec > 0) {
-      // Pause entry: send zero frequency
-      _connectionNotifier.sendCommand(Uint8List.fromList([
-        0,
-        0,
-        Commands.cmdAdvanced,
-        Commands.subSetPowerFreq,
-        0, 0, 0, 0,
-        0,
-      ]));
+      // Pause entry: send STOP (ManPower=1)
+      _connectionNotifier.sendCommand(
+        PacketBuilder.buildSetPowerFreq(0, 0, 1, 0, 0, isLan: true),
+      );
+      debugPrint('[Playback] Pause entry — sent ManPower=1 STOP');
       return;
     }
 
-    // Convert frequency to device format (Hz * 100 as 4-byte LE)
+    // Convert frequency to device format (Hz * 100)
+    // Like Delphi: Trunc(ADOQueryFreq.FieldByName('freq').AsFloat * 100)
     final freqInt = (entry.freqHz * 100).toInt();
-    final freqBytes = ByteData(4);
-    freqBytes.setUint32(0, freqInt, Endian.little);
 
-    _connectionNotifier.sendCommand(Uint8List.fromList([
-      0,
-      0,
-      Commands.cmdAdvanced,
-      Commands.subSetPowerFreq,
-      freqBytes.getUint8(0),
-      freqBytes.getUint8(1),
-      freqBytes.getUint8(2),
-      freqBytes.getUint8(3),
-      100, // power (will be overridden by device settings)
-    ]));
+    // Like Delphi: set_power_freq(0, 0, 0, 0, freqInt)
+    _connectionNotifier.sendCommand(
+      PacketBuilder.buildSetPowerFreq(0, 0, 0, 0, freqInt, isLan: true),
+    );
+    debugPrint('[Playback] Sending freq=${entry.freqHz}Hz '
+        '(raw=$freqInt) program=${entry.programName}');
   }
 }
 

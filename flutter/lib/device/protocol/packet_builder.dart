@@ -75,6 +75,18 @@ class PacketBuilder {
   /// Set power, sweep, and frequency.
   ///
   /// [frequence] is in Hz * 100 and written as 4-byte little-endian.
+  /// Matches Delphi set_power_freq() — sends exactly 12 bytes.
+  ///
+  /// Byte layout (matching Delphi USB_Buffer[1..12]):
+  ///   [0] = 0 (report ID)
+  ///   [1] = transport (0=USB, 2=LAN)
+  ///   [2] = 26 (cmdAdvanced)
+  ///   [3] = 10 (subSetPowerFreq)
+  ///   [4] = ManSweep
+  ///   [5] = ManPower (0=normal, 1=STOP)
+  ///   [6..9] = Frequency as 4-byte little-endian (Hz * 100)
+  ///   [10] = Sweep
+  ///   [11] = Power
   static Uint8List buildSetPowerFreq(
     int manSweep,
     int sweep,
@@ -83,20 +95,19 @@ class PacketBuilder {
     int frequence, {
     bool isLan = false,
   }) {
-    final buf = createBuffer();
+    final buf = Uint8List(12);
     buf[0] = 0;
     buf[1] = isLan ? 2 : 0;
     buf[2] = 26;
     buf[3] = 10;
     buf[4] = manSweep;
-    buf[5] = sweep;
-    buf[6] = manPower;
-    buf[7] = power;
-    // Frequency as 4-byte little-endian.
-    buf[8] = frequence & 0xFF;
-    buf[9] = (frequence >> 8) & 0xFF;
-    buf[10] = (frequence >> 16) & 0xFF;
-    buf[11] = (frequence >> 24) & 0xFF;
+    buf[5] = manPower;
+    buf[6] = frequence & 0xFF;
+    buf[7] = (frequence >> 8) & 0xFF;
+    buf[8] = (frequence >> 16) & 0xFF;
+    buf[9] = (frequence >> 24) & 0xFF;
+    buf[10] = sweep;
+    buf[11] = power;
     return buf;
   }
 
