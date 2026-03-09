@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,8 +24,15 @@ class _SkyZapperAppState extends ConsumerState<SkyZapperApp> {
     super.initState();
     // Delay provider modification to after the widget tree is built
     Future(() async {
-      final authNotifier = ref.read(authProvider.notifier);
-      await authNotifier.autoLogin();
+      debugPrint('[APP] Starting initialization...');
+      final stopwatch = Stopwatch()..start();
+      try {
+        final authNotifier = ref.read(authProvider.notifier);
+        await authNotifier.autoLogin();
+        debugPrint('[APP] Initialization complete in ${stopwatch.elapsedMilliseconds}ms');
+      } catch (e) {
+        debugPrint('[APP] Initialization ERROR: $e');
+      }
       if (mounted) {
         setState(() {
           _initialized = true;

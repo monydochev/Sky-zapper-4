@@ -43,6 +43,7 @@ dependencies:
   http: ^1.6.0
   path: ^1.9.1
   riverpod: ^3.2.1
+  sqflite_common_ffi: ^2.4.0+2
 
 dev_dependencies:
   flutter_test:

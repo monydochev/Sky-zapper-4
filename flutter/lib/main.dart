@@ -1,8 +1,10 @@
 import 'dart:developer' as developer;
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 import 'app.dart';
 
@@ -11,6 +13,13 @@ late final File _logFile;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize sqflite FFI for Windows/Linux/macOS desktop
+  if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+    debugPrint('[MAIN] sqflite FFI initialized for desktop');
+  }
 
   // Setup log file
   _logFile = File('/tmp/sky_zapper_debug.log');

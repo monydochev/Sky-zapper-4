@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/user.dart';
@@ -45,11 +46,14 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<void> loadUsers() async {
+    debugPrint('[AUTH] loadUsers() started');
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final users = await _userRepo.getAll();
+      debugPrint('[AUTH] loadUsers() got ${users.length} users');
       state = state.copyWith(users: users, isLoading: false);
     } catch (e) {
+      debugPrint('[AUTH] loadUsers() ERROR: $e');
       state = state.copyWith(isLoading: false, error: e.toString());
     }
   }
@@ -80,15 +84,19 @@ class AuthNotifier extends Notifier<AuthState> {
   }
 
   Future<bool> autoLogin() async {
+    debugPrint('[AUTH] autoLogin() started');
     await loadUsers();
     final users = state.users;
+    debugPrint('[AUTH] autoLogin() users loaded: ${users.length}');
 
     // Auto-login if only 1 user with no password
     if (users.length == 1 && !users.first.hasPassword) {
+      debugPrint('[AUTH] autoLogin() auto-logging in user: ${users.first.name}');
       state = state.copyWith(currentUser: users.first);
       return true;
     }
 
+    debugPrint('[AUTH] autoLogin() no auto-login, showing login screen');
     return false;
   }
 
