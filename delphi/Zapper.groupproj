@@ -1,0 +1,60 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{C10142A5-FFD5-46EE-9BCD-35A868AEF71F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SKY_Zapper.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\10.FlashFirmware\Flash.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="1.SKY_Zapper_Admin\SKY_Zapper_Admin.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SKY_Zapper">
+        <MSBuild Projects="SKY_Zapper.dproj"/>
+    </Target>
+    <Target Name="SKY_Zapper:Clean">
+        <MSBuild Projects="SKY_Zapper.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SKY_Zapper:Make">
+        <MSBuild Projects="SKY_Zapper.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Flash">
+        <MSBuild Projects="..\10.FlashFirmware\Flash.dproj"/>
+    </Target>
+    <Target Name="Flash:Clean">
+        <MSBuild Projects="..\10.FlashFirmware\Flash.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Flash:Make">
+        <MSBuild Projects="..\10.FlashFirmware\Flash.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SKY_Zapper_Admin">
+        <MSBuild Projects="1.SKY_Zapper_Admin\SKY_Zapper_Admin.dproj"/>
+    </Target>
+    <Target Name="SKY_Zapper_Admin:Clean">
+        <MSBuild Projects="1.SKY_Zapper_Admin\SKY_Zapper_Admin.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SKY_Zapper_Admin:Make">
+        <MSBuild Projects="1.SKY_Zapper_Admin\SKY_Zapper_Admin.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SKY_Zapper;Flash;SKY_Zapper_Admin"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SKY_Zapper:Clean;Flash:Clean;SKY_Zapper_Admin:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SKY_Zapper:Make;Flash:Make;SKY_Zapper_Admin:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

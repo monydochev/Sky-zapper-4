@@ -1,0 +1,84 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{2DB5D1AD-6DA0-4BBA-98CB-5E30CC1AF90B}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="SKY_Zapper.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="Installer\Installer.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="1.SKY_Zapper_Admin\SKY_Zapper_Admin.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="2.Marketing\SKY_Marketing.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="..\5.SKY_AUTOMATION\2.Server.Smart.Cloud\Server_Smart_Cloud.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="SKY_Zapper">
+        <MSBuild Projects="SKY_Zapper.dproj"/>
+    </Target>
+    <Target Name="SKY_Zapper:Clean">
+        <MSBuild Projects="SKY_Zapper.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SKY_Zapper:Make">
+        <MSBuild Projects="SKY_Zapper.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Installer">
+        <MSBuild Projects="Installer\Installer.dproj"/>
+    </Target>
+    <Target Name="Installer:Clean">
+        <MSBuild Projects="Installer\Installer.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Installer:Make">
+        <MSBuild Projects="Installer\Installer.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SKY_Zapper_Admin">
+        <MSBuild Projects="1.SKY_Zapper_Admin\SKY_Zapper_Admin.dproj"/>
+    </Target>
+    <Target Name="SKY_Zapper_Admin:Clean">
+        <MSBuild Projects="1.SKY_Zapper_Admin\SKY_Zapper_Admin.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SKY_Zapper_Admin:Make">
+        <MSBuild Projects="1.SKY_Zapper_Admin\SKY_Zapper_Admin.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="SKY_Marketing">
+        <MSBuild Projects="2.Marketing\SKY_Marketing.dproj"/>
+    </Target>
+    <Target Name="SKY_Marketing:Clean">
+        <MSBuild Projects="2.Marketing\SKY_Marketing.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="SKY_Marketing:Make">
+        <MSBuild Projects="2.Marketing\SKY_Marketing.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Server_Smart_Cloud">
+        <MSBuild Projects="..\5.SKY_AUTOMATION\2.Server.Smart.Cloud\Server_Smart_Cloud.dproj"/>
+    </Target>
+    <Target Name="Server_Smart_Cloud:Clean">
+        <MSBuild Projects="..\5.SKY_AUTOMATION\2.Server.Smart.Cloud\Server_Smart_Cloud.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Server_Smart_Cloud:Make">
+        <MSBuild Projects="..\5.SKY_AUTOMATION\2.Server.Smart.Cloud\Server_Smart_Cloud.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="SKY_Zapper;Installer;SKY_Zapper_Admin;SKY_Marketing;Server_Smart_Cloud"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="SKY_Zapper:Clean;Installer:Clean;SKY_Zapper_Admin:Clean;SKY_Marketing:Clean;Server_Smart_Cloud:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="SKY_Zapper:Make;Installer:Make;SKY_Zapper_Admin:Make;SKY_Marketing:Make;Server_Smart_Cloud:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Flutter
+flutter/build/
+flutter/.dart_tool/
+flutter/.packages
+flutter/pubspec.lock
+flutter/macos/Pods/
+flutter/macos/.symlinks/
+flutter/ios/Pods/
+flutter/ios/.symlinks/
+flutter/android/.gradle/
+flutter/android/local.properties
+
+# Debug
+flutter/debug.log
+*.log

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog last_version="1.58" program_download="https://zapper.sky.bg/software/SKY_Zapper.exe" last_version_db="2.01" database_download="https://zapper.sky.bg/software/SKY_Zapper.mdb">
+
+
+
+
+
+<program program_version="1.32" database_version="1.28" release_date="7.6.2017">
+    <description>Добавяне на подробно описание на програмите</description>    
+</program>
+
+<program program_version="1.33" database_version="1.28" release_date="3.5.2018">
+    <description>Прозорец [ПРОГРАМИ] - Добавяне на функцианалност при търсене на програми. Добавено е поле за честота и бутон търси</description>    
+</program>
+
+<program program_version="1.34" database_version="1.29" release_date="18.12.2018">
+    <description>Премахване на ненужни бутони Запиши настройки и Прочети Настройки става автоматично след натискане на друга настройка за сребърна вода</description>    
+</program>
+
+<program program_version="1.35" database_version="1.29" release_date="20.6.2019">
+    <description>Добавяне на бутон фабрични настройки / в раздел настройки / настройки на мощността</description>    
+</program>
+
+<program program_version="1.36" database_version="1.31" release_date="28.11.2019">
+    <description>Сребърна Вода - Сребърна вода след смяна не пресмята правилно времето</description>    
+	<description>Програми - Бутона "Покажи БЪРЗО ИЗБИРАНЕ" от прозореца ПРОГРАМИ не визуализира правилно последователноста на запаметените програми в запера</description>
+	<description>Програми - Да може да се записва Бързи програми върху записана програма</description>
+	<description>Общи настройки - липсва опцията "Времетраене за изклюване на АП при неактивност"</description>
+	<description>Общи настройки - не работи опцията "Изключи АП след стартиране"</description>
+	<description>Общи настройки - не работи опцията "Включи WiFi при стартиране"</description>
+	<description>Добавяне на нов прозорец за обновяване на програмата и базата данни за компютъра или лаптоп</description>
+</program>
+
+<program program_version="1.37" database_version="1.31" release_date="4.03.2020">
+    <description>Сребърна вода - проблем при промяна, губи настройка за времето</description>    
+	<description>Програми - Добавен е нов бутон за промяна на времето за всчики честоти в програмата</description>
+</program>
+
+<program program_version="1.38" database_version="1.50" release_date="3.04.2020">
+    <description>Добавена е нова група с много програми за Коронавирус</description>    
+	<description>Оправен е проблем с обновяването и запазването на новата база данни в нов файл</description>
+</program>
+
+<program program_version="1.39" database_version="1.50" release_date="27.04.2020">
+    <description>Отстраняване на проблем в прозореца настройки за моделите с WiFi, открива малко Wifi мрежи след натискането на бутона [Получаване на безжични мрежи] в раздела [WiFi - безжични настройки] </description>    
+</program>
+
+<program program_version="1.40" database_version="1.50" release_date="11.06.2020">
+    <description>Проблем с комуникацията с Cloud услугата</description>
+</program>
+
+<program program_version="1.41" database_version="1.60" release_date="25.11.2020">
+    <description>В прозорец програми премахване на ненужен бутон за запис на програми при моделите стандарт и стандарт + сребро</description>
+	<description>В прозорец програми при честотите колона секунди визуализира стойността по подразбиране, ако е включен запера</description>
+	<description>Актуализация на базата данни с по-точни честоти след десетичната запетая</description>
+</program>
+
+<program program_version="1.42" database_version="1.60" release_date="11.05.2021">
+	<description>Отстрaняване на проблем при моделите с WiFi - не работи cloud услугата</description>
+</program>
+
+<program program_version="1.43" database_version="1.61" release_date="1.10.2021">
+	<description>Отстрaняване на проблем при добавяне на нова група</description>
+	<description>Частичен превод на програмата на английски език</description>
+	<description>Корекции в програмите за кръвно налягане</description>
+</program>
+
+<program program_version="1.44" database_version="1.62" release_date="25.03.2024">
+	<description>Добавяне на нов прозорец "Персонални списъци" </description>
+</program>
+
+<program program_version="1.45" database_version="1.62" release_date="23.08.2024">
+	<description>Приключване на работата по плейлистите</description>
+	<description>Дребни промени по превода на английски език</description>
+</program>
+
+<program program_version="1.46" database_version="1.62" release_date="10.09.2024">
+	<description>Проблем с изчитането на настройки</description>	
+</program>
+
+<program program_version="1.47" database_version="2.01" release_date="21.11.2024">
+	<description>Добавяне на нови програми стават общо над 6100 броя </description>	
+</program>
+
+<program program_version="1.48" database_version="2.01" release_date="21.11.2024">
+	<description>Оправяне на проблем при търсене се скрива бройката на честотите</description>	
+</program>
+
+<program program_version="1.49" database_version="2.01" release_date="03.01.2025">
+	<description>Оправен е проблем при лаптопи с малка резолюция да се показва скрол</description>	
+</program>
+
+<program program_version="1.50" database_version="2.01" release_date="15.01.2025">
+	<description>Оправен е проблем с комуникацията на клауд услугата</description>	
+</program>
+
+<program program_version="1.51" database_version="2.01" release_date="15.01.2025">
+	<description>Оправен е проблем с редактирането на нови програми</description>	
+</program>
+
+<program program_version="1.52" database_version="2.01" release_date="15.01.2025">
+	<description>Оправен е проблем с използването на няколко запера в мрежата</description>	
+</program>
+
+<program program_version="1.53" database_version="2.01" release_date="15.01.2025">
+	<description>Добавяне на отдалечен достъп в меню настройки (AnyDesk или Team Viewer)</description>	
+</program>
+
+<program program_version="1.54" database_version="2.01" release_date="08.04.2025">
+	<description>Възможност за управление на програми и сребърна вода през WiFi</description>
+</program>
+
+<program program_version="1.55" database_version="2.01" release_date="10.05.2025">
+	<description>Промяна в избора на Скай Запер през ком порт или мрежа</description>
+</program>
+
+<program program_version="1.56" database_version="2.01" release_date="15.07.2025">
+	<description>Промяна в избора на Скай Запер през ком порт или мрежа</description>
+</program>
+
+<program program_version="1.57" database_version="2.01" release_date="15.07.2025">
+	<description>Проверка на версията, права за запис и проверка на регионалните настройки в windows </description>
+</program>
+
+<program program_version="1.58" database_version="2.01" release_date="29.08.2025">
+	<description>Отпада допълнителните настройки за програмата Скай Запер в регионалните настройки в windows </description>
+	<description>Изгледа на прозорците се регулира спрямо екрана </description>
+</program>
+
+</catalog>

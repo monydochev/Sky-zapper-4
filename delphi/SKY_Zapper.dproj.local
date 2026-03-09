@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.738,E:\1.Delphi_XE7\12.Zapper\Unit1.dfm=E:\1.Delphi_XE7\12.Zapper\uDebug.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.971,E:\1.Delphi_XE7\12.Zapper\Unit1.dfm=E:\1.Delphi_XE7\12.Zapper\uPrevod.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.837,E:\1.Delphi_XE7\12.Zapper\Unit1.dfm=E:\1.Delphi_XE7\12.Zapper\uUpdateSoftware.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.789,E:\1.Delphi_XE7\12.Zapper\uOptions.pas=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.942,E:\1.Delphi_XE7\12.Zapper\Unit1.dfm=E:\1.Delphi_XE7\12.Zapper\uUserAccess.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.128,E:\1.Delphi_XE7\12.Zapper\Unit1.dfm=E:\1.Delphi_XE7\12.Zapper\uLogView.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.859,E:\1.Delphi_XE7\12.Zapper\uPrevod.pas=E:\1.Delphi_XE7\12.Zapper\uImport.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.859,E:\1.Delphi_XE7\12.Zapper\uPrevod.dfm=E:\1.Delphi_XE7\12.Zapper\uImport.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.592,E:\1.Delphi_XE7\12.Zapper\uFirmware.dfm=E:\1.Delphi_XE7\12.Zapper\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.736,E:\1.Delphi_XE7\12.Zapper\uAdmin.dfm=E:\1.Delphi_XE7\12.Zapper\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.665,E:\1.Delphi_XE7\12.Zapper\uTranslation.pas=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.466,E:\1.Delphi_XE7\12.Zapper\uTranslation.pas=E:\1.Delphi_XE7\12.Zapper\uEdit.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.090,E:\1.Delphi_XE7\12.Zapper\uProgram.dfm=E:\1.Delphi_XE7\12.Zapper\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.691,C:\1.Delphi_10.3\12.Zapper\Unit1.pas=C:\1.Delphi_10.3\12.Zapper\uCutomPrograms.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.105,=C:\1.Delphi_10.3\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.233,C:\1.Delphi_10.3\12.Zapper\uUsers.pas=C:\1.Delphi_10.3\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.090,E:\1.Delphi_XE7\12.Zapper\uProgram.pas=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.325,=C:\1.Delphi_10.3\12.Zapper\uChangePassword.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.592,E:\1.Delphi_XE7\12.Zapper\uFirmware.pas=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.691,C:\1.Delphi_10.3\12.Zapper\Unit1.dfm=C:\1.Delphi_10.3\12.Zapper\uCutomPrograms.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.587,C:\1.Delphi_10.3\12.Zapper\uCutomPrograms.pas=C:\1.Delphi_10.3\12.Zapper\uCutomGroups.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.463,=C:\1.Delphi_10.3\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.160,=E:\1.Delphi_XE7\12.Zapper\uEditHD.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.425,E:\1.Delphi_XE7\12.Zapper\uSrebarnaVoda.dfm=E:\1.Delphi_XE7\12.Zapper\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.425,E:\1.Delphi_XE7\12.Zapper\uSrebarnaVoda.pas=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.942,E:\1.Delphi_XE7\12.Zapper\Unit1.pas=E:\1.Delphi_XE7\12.Zapper\uUserAccess.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.837,E:\1.Delphi_XE7\12.Zapper\Unit1.pas=E:\1.Delphi_XE7\12.Zapper\uUpdateSoftware.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.971,E:\1.Delphi_XE7\12.Zapper\Unit1.pas=E:\1.Delphi_XE7\12.Zapper\uPrevod.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.128,E:\1.Delphi_XE7\12.Zapper\Unit1.pas=E:\1.Delphi_XE7\12.Zapper\uLogView.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.081,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.738,E:\1.Delphi_XE7\12.Zapper\Unit1.pas=E:\1.Delphi_XE7\12.Zapper\uDebug.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.466,E:\1.Delphi_XE7\12.Zapper\uTranslation.dfm=E:\1.Delphi_XE7\12.Zapper\uEdit.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.361,=C:\1.Delphi_10.3\12.Zapper\uLogin.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.587,C:\1.Delphi_10.3\12.Zapper\uCutomPrograms.dfm=C:\1.Delphi_10.3\12.Zapper\uCutomGroups.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.789,E:\1.Delphi_XE7\12.Zapper\uOptions.dfm=E:\1.Delphi_XE7\12.Zapper\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.233,C:\1.Delphi_10.3\12.Zapper\uUsers.dfm=C:\1.Delphi_10.3\12.Zapper\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.665,E:\1.Delphi_XE7\12.Zapper\uTranslation.dfm=E:\1.Delphi_XE7\12.Zapper\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.747,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.378,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.641,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.736,E:\1.Delphi_XE7\12.Zapper\uAdmin.pas=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.877,E:\1.Delphi_XE7\12.Zapper\uDebug.pas=</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.603,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.609,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.166,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.579,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.467,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.521,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.755,=E:\1.Delphi_XE7\12.Zapper\Unit1.pas</Transaction>
+  </Transactions>
+	<ProjectSortOrder AutoSort="0" SortType="0">
+    <File Path="uEdit.pas"/>
+    <File Path="uEdit.dfm"/>
+    <File Path="uMain.pas"/>
+    <File Path="uMain.dfm"/>
+    <File Path="uOptions.pas"/>
+    <File Path="uOptions.dfm"/>
+    <File Path="uProgram.pas"/>
+    <File Path="uProgram.dfm"/>
+    <File Path="uSrebarnaVoda.pas"/>
+    <File Path="uSrebarnaVoda.dfm"/>
+    <File Path="uUpdateSoftware.pas"/>
+    <File Path="uUpdateSoftware.dfm"/>
+    <File Path="uCutomGroups.pas"/>
+    <File Path="uCutomGroups.dfm"/>
+    <File Path="uLogin.pas"/>
+    <File Path="uLogin.dfm"/>
+    <File Path="uChangePassword.pas"/>
+    <File Path="uChangePassword.dfm"/>
+    <File Path="uUsers.pas"/>
+    <File Path="uUsers.dfm"/>
+  </ProjectSortOrder>
+</BorlandProject>
