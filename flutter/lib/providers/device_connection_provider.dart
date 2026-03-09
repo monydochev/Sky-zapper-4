@@ -14,7 +14,7 @@ class DeviceConnectionState {
   final ConnectionType connectionType;
   final DeviceInfo? deviceInfo;
   final bool isScanning;
-  final List<String> discoveredDevices; // IP addresses
+  final List<String> discoveredDevices;
   final String? error;
 
   const DeviceConnectionState({
@@ -48,13 +48,17 @@ class DeviceConnectionState {
 }
 
 class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
-  Socket? _socket;
+  Socket? _tcpSocket;
   Timer? _heartbeatTimer;
   DateTime? _lastPingResponse;
-  StreamSubscription<Uint8List>? _socketSubscription;
+  StreamSubscription<Uint8List>? _tcpSubscription;
 
-  /// Callback for incoming data from device
   void Function(Uint8List data)? onDataReceived;
+
+  /// Discovery packet: [0x00, 0x02, 0x09, 0x00, 0xFF, 0x00, 0x00]
+  /// Identical to Delphi sendReadAll_Network
+  static final Uint8List _discoveryPacket =
+      Uint8List.fromList([0, 2, 9, 0, 255, 0, 0]);
 
   @override
   DeviceConnectionState build() {
@@ -67,20 +71,15 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
   void _cleanup() {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = null;
-    _socketSubscription?.cancel();
-    _socketSubscription = null;
-    _socket?.destroy();
-    _socket = null;
+    _tcpSubscription?.cancel();
+    _tcpSubscription = null;
+    _tcpSocket?.destroy();
+    _tcpSocket = null;
     _lastPingResponse = null;
   }
 
-  /// Legacy discovery packet: [0x00, 0x02, 0x09, 0x00, 0xFF, 0x00, 0x00]
-  /// Same as Delphi sendReadAll_Network — CMD 9 (ReadAll), 7 bytes, LAN flag=2
-  static final Uint8List _discoveryPacket = Uint8List.fromList([0, 2, 9, 0, 255, 0, 0]);
-
-  /// Check if a UDP response is a valid device status (respStatus=137)
+  /// Check if UDP response is a device status: [0x02, 0x00, 137, 0x00, MAC...]
   bool _isDeviceResponse(Uint8List data) {
-    // Delphi check: _read[0]==2 AND _read[1]==0 AND _read[2]==137 AND _read[3]==0
     return data.length >= 8 &&
         data[0] == 2 &&
         data[1] == 0 &&
@@ -88,15 +87,70 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
         data[3] == 0;
   }
 
-  /// Extract MAC info from a device response
   String _extractMac(Uint8List data) {
-    return data.sublist(4, 8)
+    return data
+        .sublist(4, 8)
         .map((b) => b.toRadixString(16).padLeft(2, '0'))
         .join();
   }
 
-  /// Broadcast scan — изпраща ReadAll на 255.255.255.255:7800
-  /// Бърз, но може да не работи в някои мрежови конфигурации.
+  /// Helper: open a UDP socket on port 7800, listen for device responses,
+  /// execute [sendPackets] callback to send discovery packets,
+  /// wait [timeout] for responses, close socket, return found devices.
+  Future<List<String>> _udpScan({
+    required Future<void> Function(RawDatagramSocket socket) sendPackets,
+    Duration timeout = const Duration(seconds: 3),
+  }) async {
+    final devices = <String>[];
+
+    final socket = await RawDatagramSocket.bind(
+      InternetAddress.anyIPv4,
+      AppConstants.udpPort,
+      reuseAddress: true,
+      reusePort: true,
+    );
+    socket.broadcastEnabled = true;
+    debugPrint('[UDP] Bound to port ${socket.port}');
+
+    final completer = Completer<void>();
+
+    socket.listen((event) {
+      if (event == RawSocketEvent.read) {
+        final datagram = socket.receive();
+        if (datagram != null) {
+          final data = Uint8List.fromList(datagram.data);
+          final ip = datagram.address.address;
+          debugPrint('[UDP] Recv from $ip (${data.length}B) '
+              '[${data.take(8).map((b) => b.toRadixString(16).padLeft(2, '0')).join(' ')}]');
+          if (_isDeviceResponse(data)) {
+            final mac = _extractMac(data);
+            debugPrint('[UDP] ✓ Device: $ip (MAC: $mac)');
+            if (!devices.contains(ip)) {
+              devices.add(ip);
+            }
+          }
+        }
+      }
+    });
+
+    // Send packets
+    await sendPackets(socket);
+
+    // Wait for responses
+    Timer(timeout, () {
+      if (!completer.isCompleted) completer.complete();
+    });
+    await completer.future;
+
+    socket.close();
+    debugPrint('[UDP] Scan done. Found ${devices.length} device(s)');
+    return devices;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Broadcast scan
+  // ---------------------------------------------------------------------------
+
   Future<void> scanBroadcast() async {
     state = state.copyWith(
       isScanning: true,
@@ -105,66 +159,32 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
     );
 
     try {
-      final devices = <String>[];
-      final socket = await RawDatagramSocket.bind(
-        InternetAddress.anyIPv4,
-        AppConstants.udpPort,
-        reuseAddress: true,
-        reusePort: true,
-      );
-      debugPrint('[Broadcast] Bound to port ${socket.port}');
-      socket.broadcastEnabled = true;
-
       debugPrint('[Broadcast] Sending ReadAll to 255.255.255.255:${AppConstants.udpPort}');
-      socket.send(
-        _discoveryPacket,
-        InternetAddress('255.255.255.255'),
-        AppConstants.udpPort,
+      final devices = await _udpScan(
+        sendPackets: (socket) async {
+          socket.send(
+            _discoveryPacket,
+            InternetAddress('255.255.255.255'),
+            AppConstants.udpPort,
+          );
+        },
+        timeout: const Duration(seconds: 3),
       );
 
-      final completer = Completer<void>();
-      Timer(const Duration(seconds: 3), () {
-        if (!completer.isCompleted) completer.complete();
-      });
-
-      socket.listen((event) {
-        if (event == RawSocketEvent.read) {
-          final datagram = socket.receive();
-          if (datagram != null) {
-            final data = Uint8List.fromList(datagram.data);
-            debugPrint('[Broadcast] Response from ${datagram.address.address} (${data.length} bytes) [${data.take(8).map((b) => '0x${b.toRadixString(16).padLeft(2, '0')}').join(', ')}]');
-            if (_isDeviceResponse(data)) {
-              final ip = datagram.address.address;
-              final mac = _extractMac(data);
-              if (!devices.contains(ip)) {
-                debugPrint('[Broadcast] ✓ Device found: $ip (MAC: $mac)');
-                devices.add(ip);
-                state = state.copyWith(discoveredDevices: List.from(devices));
-              }
-            }
-          }
-        }
-      });
-
-      await completer.future;
-      socket.close();
-
-      debugPrint('[Broadcast] Scan complete. Found ${devices.length} device(s)');
       state = state.copyWith(
         isScanning: false,
         discoveredDevices: devices,
       );
     } catch (e) {
       debugPrint('[Broadcast] Error: $e');
-      state = state.copyWith(
-        isScanning: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isScanning: false, error: e.toString());
     }
   }
 
-  /// Subnet scan — изпраща ReadAll до всеки IP в /24 подмрежата (2..254)
-  /// с 10ms пауза между пакетите (legacy метод от Delphi версията).
+  // ---------------------------------------------------------------------------
+  // Subnet scan — like Delphi ButtonSearchZappersNetworkClick
+  // ---------------------------------------------------------------------------
+
   Future<void> scanSubnet() async {
     state = state.copyWith(
       isScanning: true,
@@ -190,78 +210,44 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
         );
         return;
       }
+
       final subnet = '${parts[0]}.${parts[1]}.${parts[2]}';
-      debugPrint('[Subnet] Local IP: $localIp, scanning $subnet.2-254 on port ${AppConstants.udpPort}');
+      debugPrint('[Subnet] Local IP: $localIp, scanning $subnet.2-254');
 
-      final devices = <String>[];
-      final socket = await RawDatagramSocket.bind(
-        InternetAddress.anyIPv4,
-        AppConstants.udpPort,
-        reuseAddress: true,
-        reusePort: true,
-      );
-      debugPrint('[Subnet] Bound to port ${socket.port}');
-
-      socket.listen((event) {
-        debugPrint('[Subnet] Socket event: $event');
-        if (event == RawSocketEvent.read) {
-          final datagram = socket.receive();
-          if (datagram != null) {
-            final data = Uint8List.fromList(datagram.data);
-            debugPrint('[Subnet] Response from ${datagram.address.address}:${datagram.port} (${data.length} bytes) [${data.take(8).map((b) => '0x${b.toRadixString(16).padLeft(2, '0')}').join(', ')}]');
-            if (_isDeviceResponse(data)) {
-              final ip = datagram.address.address;
-              final mac = _extractMac(data);
-              if (!devices.contains(ip)) {
-                debugPrint('[Subnet] ✓ Device found: $ip (MAC: $mac)');
-                devices.add(ip);
-                state = state.copyWith(discoveredDevices: List.from(devices));
-              }
-            } else {
-              debugPrint('[Subnet] Ignored response (not device status)');
+      final devices = await _udpScan(
+        sendPackets: (socket) async {
+          for (int i = 2; i <= 254; i++) {
+            final targetIp = '$subnet.$i';
+            try {
+              socket.send(
+                _discoveryPacket,
+                InternetAddress(targetIp),
+                AppConstants.udpPort,
+              );
+            } catch (_) {
+              // No route to host, etc — skip
             }
+            // 10ms delay between sends (Delphi: Sleep(10))
+            await Future.delayed(const Duration(milliseconds: 10));
           }
-        }
-      });
+        },
+        timeout: const Duration(seconds: 2),
+      );
 
-      // Send ReadAll to each IP with 10ms delay (like Delphi legacy)
-      for (int i = 2; i <= 254; i++) {
-        final targetIp = '$subnet.$i';
-        debugPrint('[Subnet] ReadAll -> $targetIp');
-        try {
-          socket.send(
-            _discoveryPacket,
-            InternetAddress(targetIp),
-            AppConstants.udpPort,
-          );
-        } on SocketException catch (e) {
-          debugPrint('[Subnet] Failed $targetIp: $e');
-        } catch (e) {
-          debugPrint('[Subnet] Failed $targetIp: $e');
-        }
-        // 10ms delay between sends (matches Delphi Sleep(10))
-        await Future.delayed(const Duration(milliseconds: 10));
-      }
-
-      // Wait extra 2 seconds for late responses
-      await Future.delayed(const Duration(seconds: 2));
-      socket.close();
-
-      debugPrint('[Subnet] Scan complete. Found ${devices.length} device(s)');
       state = state.copyWith(
         isScanning: false,
         discoveredDevices: devices,
       );
     } catch (e) {
       debugPrint('[Subnet] Error: $e');
-      state = state.copyWith(
-        isScanning: false,
-        error: e.toString(),
-      );
+      state = state.copyWith(isScanning: false, error: e.toString());
     }
   }
 
-  /// Detect the local IPv4 address.
+  // ---------------------------------------------------------------------------
+  // Helpers
+  // ---------------------------------------------------------------------------
+
   Future<String?> _getLocalIp() async {
     try {
       final interfaces = await NetworkInterface.list(
@@ -280,14 +266,18 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
     return null;
   }
 
+  // ---------------------------------------------------------------------------
+  // Connect / Disconnect
+  // ---------------------------------------------------------------------------
+
   Future<void> connectLan(String ip) async {
     state = state.copyWith(clearError: true);
 
     try {
-      _socket = await Socket.connect(ip, AppConstants.udpPort,
+      _tcpSocket = await Socket.connect(ip, AppConstants.udpPort,
           timeout: const Duration(seconds: 5));
 
-      _socketSubscription = _socket!.listen(
+      _tcpSubscription = _tcpSocket!.listen(
         (data) {
           _lastPingResponse = DateTime.now();
           onDataReceived?.call(Uint8List.fromList(data));
@@ -308,13 +298,7 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
         connectionType: ConnectionType.lan,
       );
 
-      // Request device info
-      await sendCommand(Uint8List.fromList([
-        0,
-        0,
-        Commands.cmdReadAll,
-        0,
-      ]));
+      await sendCommand(Uint8List.fromList([0, 0, Commands.cmdReadAll, 0]));
     } catch (e) {
       state = state.copyWith(error: e.toString());
     }
@@ -325,10 +309,10 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
   }
 
   Future<void> sendCommand(Uint8List data) async {
-    if (_socket != null) {
+    if (_tcpSocket != null) {
       try {
-        _socket!.add(data);
-        await _socket!.flush();
+        _tcpSocket!.add(data);
+        await _tcpSocket!.flush();
       } catch (e) {
         disconnect();
       }
@@ -338,7 +322,6 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
   void _startHeartbeat() {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = Timer.periodic(const Duration(seconds: 5), (_) {
-      // Check if we've received a response within 20 seconds
       if (_lastPingResponse != null) {
         final diff = DateTime.now().difference(_lastPingResponse!);
         if (diff.inSeconds > 20) {
@@ -346,14 +329,7 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
           return;
         }
       }
-
-      // Send ping
-      sendCommand(Uint8List.fromList([
-        0,
-        0,
-        Commands.cmdAdvanced,
-        Commands.subPing,
-      ]));
+      sendCommand(Uint8List.fromList([0, 0, Commands.cmdAdvanced, Commands.subPing]));
     });
   }
 
