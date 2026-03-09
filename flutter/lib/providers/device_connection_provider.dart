@@ -294,6 +294,52 @@ class DeviceConnectionNotifier extends Notifier<DeviceConnectionState> {
   }
 
   // ---------------------------------------------------------------------------
+  // Auto-connect to previously selected device on startup
+  // ---------------------------------------------------------------------------
+
+  /// Try to connect to the last saved device IP from the database.
+  /// Sends a probe and waits briefly for a response before committing.
+  Future<void> autoConnect() async {
+    try {
+      final options = await _optionsRepo.get();
+      final savedIp = options.networkIp;
+      if (savedIp == null || savedIp.isEmpty) {
+        debugPrint('[AutoConnect] No saved device IP');
+        return;
+      }
+
+      debugPrint('[AutoConnect] Trying saved device at $savedIp');
+
+      // Open UDP socket and send a probe
+      final socket = await _ensureUdpSocket();
+      _scanning = false;
+      _lastResponse = null;
+
+      socket.send(_discoveryPacket, InternetAddress(savedIp), AppConstants.udpPort);
+
+      // Wait up to 3 seconds for a response
+      for (int i = 0; i < 15; i++) {
+        await Future.delayed(const Duration(milliseconds: 200));
+        if (_lastResponse != null) {
+          debugPrint('[AutoConnect] Device responded, connecting');
+          state = state.copyWith(
+            isConnected: true,
+            connectionType: ConnectionType.lan,
+            connectedIp: savedIp,
+            clearError: true,
+          );
+          _startHeartbeat();
+          return;
+        }
+      }
+
+      debugPrint('[AutoConnect] No response from $savedIp');
+    } catch (e) {
+      debugPrint('[AutoConnect] Error: $e');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
   // Select device — like Delphi ButtonUSE_NetworkClick
   // ---------------------------------------------------------------------------
 

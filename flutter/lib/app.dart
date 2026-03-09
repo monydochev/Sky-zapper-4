@@ -7,6 +7,7 @@ import 'core/theme.dart';
 import 'features/auth/login_screen.dart';
 import 'features/home/home_screen.dart';
 import 'providers/auth_provider.dart';
+import 'providers/device_connection_provider.dart';
 import 'providers/locale_provider.dart';
 
 class SkyZapperApp extends ConsumerStatefulWidget {
@@ -29,6 +30,11 @@ class _SkyZapperAppState extends ConsumerState<SkyZapperApp> {
       try {
         final authNotifier = ref.read(authProvider.notifier);
         await authNotifier.autoLogin();
+        debugPrint('[APP] Auth complete in ${stopwatch.elapsedMilliseconds}ms');
+
+        // Auto-connect to the last selected device
+        final connectionNotifier = ref.read(deviceConnectionProvider.notifier);
+        connectionNotifier.autoConnect();
         debugPrint('[APP] Initialization complete in ${stopwatch.elapsedMilliseconds}ms');
       } catch (e) {
         debugPrint('[APP] Initialization ERROR: $e');
